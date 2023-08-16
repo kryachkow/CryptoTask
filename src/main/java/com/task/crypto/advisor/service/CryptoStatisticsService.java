@@ -12,6 +12,6 @@ public interface CryptoStatisticsService {
 
     NormalizedRange getBiggestNormalizedRangeForDate(LocalDate offsetDate);
 
-    CryptoStats getCryptoStatisticsForName(String crypto);
+    CryptoStats configureCryptoStatisticsByName(String crypto);
 
 }

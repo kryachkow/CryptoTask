@@ -6,7 +6,6 @@ import com.task.crypto.advisor.dto.NormalizedRange;
 import com.task.crypto.advisor.exception.CryptoDataNotFoundException;
 import com.task.crypto.advisor.exception.CryptoStatisticException;
 import com.task.crypto.advisor.service.CryptoStatisticsService;
-import com.task.crypto.advisor.validation.annotation.DateValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -21,7 +21,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/statistics")
 @RequiredArgsConstructor
-@Validated
 @RateLimited
 public class StatisticsController {
 
@@ -33,6 +32,7 @@ public class StatisticsController {
      * @return NormalizedRange of all available cryptos
      */
     @GetMapping("/normalized-values")
+    @RateLimited
     public List<NormalizedRange> getSortedNormalizedValues() {
         return cryptoStatisticsService.getNormalizedRangeForAllCryptos();
     }
@@ -44,9 +44,9 @@ public class StatisticsController {
      * @return The statistics for the specified cryptocurrency.
      * @throws CryptoDataNotFoundException if there is no data for such crypto name
      */
-    @GetMapping("/by-crypto/{crypto}")
+    @GetMapping("/crypto/{crypto}")
     public CryptoStats getCryptoStatistics(@PathVariable("crypto") String crypto) {
-        return cryptoStatisticsService.getCryptoStatisticsForName(crypto);
+        return cryptoStatisticsService.configureCryptoStatisticsByName(crypto);
     }
 
     /**
@@ -57,9 +57,9 @@ public class StatisticsController {
      * @throws javax.validation.ConstraintViolationException if the provided date is invalid
      * @throws CryptoStatisticException                      if there no data for such offset date
      */
-    @GetMapping("/by-date/{date}")
-    public NormalizedRange getHighestNormalizedValueCrypto(@PathVariable("date") @DateValidation String date) {
-        return cryptoStatisticsService.getBiggestNormalizedRangeForDate(LocalDate.parse(date, DateTimeFormatter.ISO_DATE));
+    @GetMapping("/date/{date}")
+    public NormalizedRange getHighestNormalizedValueCrypto(@PathVariable("date") LocalDate date) {
+        return cryptoStatisticsService.getBiggestNormalizedRangeForDate(date);
     }
 
 }

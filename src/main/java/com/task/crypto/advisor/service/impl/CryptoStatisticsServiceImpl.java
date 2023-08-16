@@ -27,7 +27,7 @@ public class CryptoStatisticsServiceImpl implements CryptoStatisticsService {
         return cryptoDataService
                 .getCryptos()
                 .stream()
-                .map(crypto -> getNormalizedRangeForCryptoName(crypto, LocalDate.now()))
+                .map(crypto -> configureNormalizedRangeByName(crypto, LocalDate.now()))
                 .sorted(Comparator.comparing(NormalizedRange::getNormalizedValue).reversed())
                 .collect(Collectors.toList());
     }
@@ -37,14 +37,14 @@ public class CryptoStatisticsServiceImpl implements CryptoStatisticsService {
         return cryptoDataService
                 .getCryptos()
                 .stream()
-                .map(crypto -> getNormalizedRangeForCryptoName(crypto, offsetDate))
+                .map(crypto -> configureNormalizedRangeByName(crypto, offsetDate))
                 .max(Comparator.comparing(NormalizedRange::getNormalizedValue))
                 .orElseThrow(
                         () -> new CryptoStatisticException(String.format("Couldn't obtain highest normalized range for %s date", offsetDate.format(DateTimeFormatter.ISO_DATE)))
                 );
     }
 
-    public CryptoStats getCryptoStatisticsForName(String crypto) {
+    public CryptoStats configureCryptoStatisticsByName(String crypto) {
         return CryptoStats.builder()
                 .symbol(crypto.toUpperCase())
                 .min(cryptoDataService.getMinForCrypto(crypto, LocalDate.now()).getPrice())
@@ -56,7 +56,7 @@ public class CryptoStatisticsServiceImpl implements CryptoStatisticsService {
     }
 
 
-    private NormalizedRange getNormalizedRangeForCryptoName(String cryptoName, LocalDate offsetDate) {
+    private NormalizedRange configureNormalizedRangeByName(String cryptoName, LocalDate offsetDate) {
         return NormalizedRange
                 .builder()
                 .symbol(cryptoName.toUpperCase())

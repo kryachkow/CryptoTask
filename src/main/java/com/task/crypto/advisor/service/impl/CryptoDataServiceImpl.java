@@ -5,6 +5,7 @@ import com.task.crypto.advisor.exception.CryptoDataNotFoundException;
 import com.task.crypto.advisor.exception.CryptoStatisticException;
 import com.task.crypto.advisor.model.CryptoRecord;
 import com.task.crypto.advisor.service.CryptoDataService;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,33 +27,32 @@ public class CryptoDataServiceImpl implements CryptoDataService {
     private static final String NEWEST = "newest";
     private static final String VALUES_SUFFIX = "_values.csv";
     @Value("${crypto.prices}")
-    private final String csvPaths = "src/main/resources/prices";
+    private String csvPaths;
     private final Map<String, List<CryptoRecord>> dataStorage = new HashMap<>();
 
 
     public CryptoDataServiceImpl() {
         log.info("Trying to get crypto data");
-        initializeStorage();
     }
 
-    @Cacheable(MIN)
+    @Cacheable(value = "${application.cache.min}")
     public CryptoRecord getMinForCrypto(String crypto, LocalDate offsetDate) {
         return getEdgeCryptoRecordByParams(crypto, offsetDate, Comparator.comparing(CryptoRecord::getPrice), MIN);
 
     }
 
-    @Cacheable(MAX)
+    @Cacheable(value = "${application.cache.max}")
     public CryptoRecord getMaxForCrypto(String crypto, LocalDate offsetDate) {
         return getEdgeCryptoRecordByParams(crypto, offsetDate, Comparator.comparing(CryptoRecord::getPrice).reversed(), MAX);
 
     }
 
-    @Cacheable(NEWEST)
+    @Cacheable(value = "${application.cache.newest}")
     public CryptoRecord getLatestForCrypto(String crypto, LocalDate offsetDate) {
         return getEdgeCryptoRecordByParams(crypto, offsetDate, Comparator.comparing(CryptoRecord::getDate).reversed(), NEWEST);
     }
 
-    @Cacheable(OLDEST)
+    @Cacheable(value = "${application.cache.oldest}")
     public CryptoRecord getOldestForCrypto(String crypto, LocalDate offsetDate) {
         return getEdgeCryptoRecordByParams(crypto, offsetDate, Comparator.comparing(CryptoRecord::getDate), OLDEST);
     }
@@ -76,7 +76,7 @@ public class CryptoDataServiceImpl implements CryptoDataService {
                 );
     }
 
-
+    @PostConstruct
     private void initializeStorage() {
         for (File file : Objects.requireNonNull(new File(csvPaths)
                 .listFiles((dir, name) -> name.endsWith(VALUES_SUFFIX)))) {

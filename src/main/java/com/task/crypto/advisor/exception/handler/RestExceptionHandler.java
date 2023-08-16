@@ -14,6 +14,7 @@ import javax.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO: 20.07.2023 move to Controller
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -26,13 +27,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {CryptoDataNotFoundException.class, CryptoStatisticException.class, ConstraintViolationException.class})
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorEntity> handleCryptoDataNotFoundException(Exception e) {
-        return new ResponseEntity<>(ErrorEntity
-                .builder()
-                .message(ERROR_MESSAGE_MAP.get(e.getClass()))
-                .cause(e.getMessage())
-                .build(),
+    public ResponseEntity<String> handleCryptoDataNotFoundException(Exception e) {
+        return new ResponseEntity<>(ERROR_MESSAGE_MAP.get(e.getClass()),
                 HttpStatus.BAD_REQUEST);
     }
 
