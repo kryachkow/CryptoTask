@@ -7,17 +7,20 @@ import com.task.crypto.advisor.exception.CryptoDataNotFoundException;
 import com.task.crypto.advisor.exception.CryptoStatisticException;
 import com.task.crypto.advisor.service.CryptoStatisticsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-
+/**
+ * The `StatisticsController` class handles RESTful endpoints related to cryptocurrency statistics.
+ * It provides methods to retrieve normalized ranges, specific cryptocurrency statistics, and highest
+ * normalized values within a given time period.
+ * The base request mapping for this controller is "/statistics".
+ */
 @RestController
 @RequestMapping("/statistics")
 @RequiredArgsConstructor
@@ -32,7 +35,6 @@ public class StatisticsController {
      * @return NormalizedRange of all available cryptos
      */
     @GetMapping("/normalized-values")
-    @RateLimited
     public List<NormalizedRange> getSortedNormalizedValues() {
         return cryptoStatisticsService.getNormalizedRangeForAllCryptos();
     }
@@ -44,22 +46,25 @@ public class StatisticsController {
      * @return The statistics for the specified cryptocurrency.
      * @throws CryptoDataNotFoundException if there is no data for such crypto name
      */
-    @GetMapping("/crypto/{crypto}")
+    @GetMapping("/crypto-statistics/{crypto}")
     public CryptoStats getCryptoStatistics(@PathVariable("crypto") String crypto) {
-        return cryptoStatisticsService.configureCryptoStatisticsByName(crypto);
+        return cryptoStatisticsService.getCryptoStatisticsByName(crypto);
     }
 
     /**
-     * Retrieves the highest normalized value for a specific date.
+     * Retrieves the highest normalized value for a specific time period.
      *
-     * @param date The date for which to retrieve the highest normalized value.
+     * @param dateFrom First date of time period in MM-dd-yyyy format.
+     * @param dateTo Second date of time period in MM-dd-yyyy format.
      * @return The highest normalized value for the specified date.
-     * @throws javax.validation.ConstraintViolationException if the provided date is invalid
-     * @throws CryptoStatisticException                      if there no data for such offset date
+     * @throws CryptoStatisticException  if there no data for such date period
      */
-    @GetMapping("/date/{date}")
-    public NormalizedRange getHighestNormalizedValueCrypto(@PathVariable("date") LocalDate date) {
-        return cryptoStatisticsService.getBiggestNormalizedRangeForDate(date);
+    @GetMapping("/highest-normalized-range/{dateFrom}/{dateTo}")
+    public NormalizedRange getHighestNormalizedValueCrypto(@PathVariable("dateFrom") @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate dateFrom, @PathVariable @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate dateTo) {
+        if (dateTo.isBefore(dateFrom) || dateFrom.isAfter(LocalDate.now())) {
+            throw new CryptoStatisticException("Can`t obtain statistics for inappropriate date period");
+        }
+        return cryptoStatisticsService.getBiggestNormalizedRangeForDate(dateFrom, dateTo);
     }
 
 }

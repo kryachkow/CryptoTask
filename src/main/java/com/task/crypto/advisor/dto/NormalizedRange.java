@@ -11,5 +11,6 @@ import java.time.LocalDate;
 public class NormalizedRange {
     private String symbol;
     private BigDecimal normalizedValue;
-    private LocalDate offsetDate;
+    private LocalDate dateFrom;
+    private LocalDate dateTo;
 }

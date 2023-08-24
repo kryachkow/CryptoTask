@@ -30,9 +30,9 @@ create table if not exists `application_user_role` (
 
 insert into `authority` ("authority_name") VALUES ('AUTHORITY_READ'), ('AUTHORITY_WRITE');
 insert into `role` ("role_name") VALUES ('ROLE_USER'), ('ROLE_ADMIN');
-insert into `application_user` ("user_name", "password") VALUES('user', '$2a$10$CYgt7ph3F6Uw53Rn2365luOs8FKV77Zj./VxeGNWYDqoikD/xhSb2'), ('admin', '$2a$10$u/NVskqrBxNtAWheaApmf.HbR2VtNB85efIxPubIO6BUgFCoDfTIW');
+insert into `application_user` ("user_name", "password") VALUES('testUser', '$2a$10$CYgt7ph3F6Uw53Rn2365luOs8FKV77Zj./VxeGNWYDqoikD/xhSb2'), ('testAdmin', '$2a$10$u/NVskqrBxNtAWheaApmf.HbR2VtNB85efIxPubIO6BUgFCoDfTIW');
 
-insert into `role_authority` ("role_id", "authority_id")  VALUES (1,1), (2,2);
-insert into `application_user_role` ("application_user_id", "role_id") VALUES (1,1), (2,1), (2,2);
+insert into `role_authority` ("role_id", "authority_id")  VALUES (1,1), (2,2), (2,1);
+insert into `application_user_role` ("application_user_id", "role_id") VALUES (1,1), (2,2);
 
 
