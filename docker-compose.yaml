@@ -1,0 +1,8 @@
+version: '3'
+services:
+  crypto-advisor:
+    build: ''
+    image: kriach/crypto-advisor-task:latest
+    container_name: crypto-advisor-task
+    ports:
+      - "8081:8081"

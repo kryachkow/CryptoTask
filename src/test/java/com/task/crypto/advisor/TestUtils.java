@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public final class TestUtils {
 
 
-    private static final String INITIAL_DIRECTORY = "src/test/resources/prices";
+    private static final String INITIAL_DIRECTORY = "temporary-resources";
     private static final String COPY_DIRECTORY = "src/test/resources/copy";
 
     private TestUtils() {
