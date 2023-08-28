@@ -8,6 +8,7 @@ import com.task.crypto.advisor.exceptions.CryptoStatisticException;
 import com.task.crypto.advisor.services.CryptoDataService;
 import com.task.crypto.advisor.services.CryptoStatisticsService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
  * Class retrieves info from CryptoDataService bean.
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CryptoStatisticsServiceImpl implements CryptoStatisticsService {
 
@@ -62,8 +64,10 @@ public class CryptoStatisticsServiceImpl implements CryptoStatisticsService {
                 .map(crypto -> configureNormalizedRangeByName(crypto, dateFrom, dateTo))
                 .max(Comparator.comparing(NormalizedRange::getNormalizedValue))
                 .orElseThrow(
-                        () -> new CryptoStatisticException(String.format("Couldn't obtain highest normalized range for period  from %s to %s", dateFrom.format(DateTimeFormatter.ISO_DATE), dateTo.format(DateTimeFormatter.ISO_DATE)))
-                );
+                        () -> {
+                            log.error("Couldn't obtain highest normalized range for period  from {} to {}", dateFrom, dateTo);
+                            return new CryptoStatisticException(String.format("Couldn't obtain highest normalized range for period  from %s to %s", dateFrom.format(DateTimeFormatter.ISO_DATE), dateTo.format(DateTimeFormatter.ISO_DATE)));
+                        });
     }
 
     /**

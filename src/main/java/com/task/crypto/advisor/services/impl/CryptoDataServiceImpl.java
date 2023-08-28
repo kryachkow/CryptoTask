@@ -129,7 +129,10 @@ public class CryptoDataServiceImpl implements CryptoDataService {
                                 .min(comparator))
                 .get()
                 .orElseThrow(
-                        () -> new CryptoStatisticException(String.format("Couldn't obtain %s value for %s crypto for %s to %s period", neededCase, crypto, dateFrom.format(DateTimeFormatter.ISO_DATE), dateTo.format(DateTimeFormatter.ISO_DATE))));
+                        () -> {
+                            log.error("Couldn't obtain {} value for {} crypto for {} to {} period", neededCase, crypto, dateFrom, dateTo);
+                            return new CryptoStatisticException(String.format("Couldn't obtain %s value for %s crypto for %s to %s period", neededCase, crypto, dateFrom.format(DateTimeFormatter.ISO_DATE), dateTo.format(DateTimeFormatter.ISO_DATE)));
+                        });
     }
 
 

@@ -7,6 +7,7 @@ import com.task.crypto.advisor.exceptions.CryptoDataNotFoundException;
 import com.task.crypto.advisor.exceptions.CryptoStatisticException;
 import com.task.crypto.advisor.services.CryptoStatisticsService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ import java.util.List;
 @RequestMapping("/statistics")
 @RequiredArgsConstructor
 @RateLimited
+@Slf4j
 public class StatisticsController {
 
     private final CryptoStatisticsService cryptoStatisticsService;
@@ -60,6 +62,7 @@ public class StatisticsController {
     @GetMapping("/highest-normalized-range/{dateFrom}/{dateTo}")
     public NormalizedRange getHighestNormalizedValueCrypto(@PathVariable("dateFrom") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateFrom, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateTo) {
         if (dateTo.isBefore(dateFrom) || dateFrom.isAfter(LocalDate.now())) {
+            log.error("Inappropriate dates dateFrom: {} dateTo: {} ", dateFrom, dateTo);
             throw new CryptoStatisticException("Can`t obtain statistics for inappropriate date period");
         }
         return cryptoStatisticsService.getBiggestNormalizedRangeForDate(dateFrom, dateTo);

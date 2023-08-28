@@ -40,6 +40,7 @@ public class RateLimitAspect {
         String ipAddress = getIpAddress(request);
         AtomicInteger requestCount = getRequestCount(ipAddress);
         if (requestCount.get() >= REQUEST_LIMIT) {
+            log.error("Rate limit exceeded for IP: " + ipAddress);
             throw new RateLimitException("Rate limit exceeded for IP: " + ipAddress);
         }
         requestCount.incrementAndGet();

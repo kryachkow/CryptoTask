@@ -46,6 +46,7 @@ public class UploadController {
     @PreAuthorize("hasAuthority('SCOPE_AUTHORITY_WRITE')")
     public UploadResponse uploadNewData(@RequestParam("file") MultipartFile file) {
         if (file == null || file.isEmpty()) {
+            log.error("There is no file with 'file' key or file is empty");
             throw new CryptoValuesCsvValidationException("There is no file or file is empty");
         }
         return csvUploadService.uploadCsv(file);
